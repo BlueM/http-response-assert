@@ -1,0 +1,45 @@
+const debug = require('debug')('http-response-assert:json-handler');
+const jsonPointer = require('jsonpointer');
+const matcher = require('../matcher');
+
+/**
+ * Performs case-sensitive checks on JSON path expressions
+ *
+ * @param headers
+ * @param statusCode
+ * @param body
+ * @param matcherData
+ *
+ * @returns {*}
+ */
+module.exports = function (headers, statusCode, body, matcherData) {
+
+    debug('matcherData: %o', matcherData);
+
+    let jsonObject;
+    try {
+        jsonObject = JSON.parse(body);
+    } catch (e) {
+        return 'Could not JSON-decode response body';
+    }
+
+    const jsonPointerPath = matcherData.shift();
+
+    debug('Parsed JSON: %o', jsonObject);
+    debug('JSON pointer: %s', jsonPointerPath);
+    debug('Matcher data: %s', matcherData);
+
+    let actualValue = jsonPointer.get(jsonObject, jsonPointerPath);
+
+    if (undefined !== actualValue) {
+        actualValue = String(actualValue);
+    }
+
+    const result = matcher(actualValue, matcherData);
+
+    if (result === null) {
+        return null;
+    }
+
+    return `Check for JSON pointer “${jsonPointerPath}”: ${result}`;
+};

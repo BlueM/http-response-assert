@@ -1,0 +1,28 @@
+{
+  "name": "@bluem/http-response-assert",
+  "version": "0.2.0",
+  "description": "Performs assertions on responses for arbitrary HTTP(S) requests",
+  "main": "index.js",
+  "author": {
+    "name": "Carsten Blüm",
+    "email": "carsten@bluem.net",
+    "url": "https://www.bluem.net/"
+  },
+  "license": "MIT",
+  "repository": "",
+  "scripts": {
+    "test": "jest",
+    "test-coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "argv-split": "^2.0.1",
+    "html2plaintext": "^1.0.1",
+    "jsdom": "^11.5.1",
+    "jsonpointer": "^4.0.1",
+    "request": "^2.79.0"
+  },
+  "devDependencies": {
+    "debug": "^3.1.0",
+    "jest": "^21.2.1"
+  }
+}
