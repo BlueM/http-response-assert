@@ -1,4 +1,4 @@
-const debug = require('debug')('http-response-assert:json-handler');
+const debug = require('debug')('@bluem/http-response-assert:handler:json');
 const jsonPointer = require('jsonpointer');
 const matcher = require('../matcher');
 

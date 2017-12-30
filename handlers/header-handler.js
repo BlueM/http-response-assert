@@ -1,4 +1,4 @@
-const debug = require('debug')('http-response-assert:header-handler');
+const debug = require('debug')('@bluem/http-response-assert:handler:header');
 const matcher = require('../matcher');
 
 /**

@@ -1,4 +1,4 @@
-const debug = require('debug')('http-response-assert:text-handler');
+const debug = require('debug')('@bluem/http-response-assert:handler:text');
 const matcher = require('../matcher');
 const htmlToPlaintext = require('html2plaintext');
 

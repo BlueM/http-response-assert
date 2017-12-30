@@ -1,5 +1,5 @@
+const debug = require('debug')('@bluem/http-response-assert:handler:xpath');
 const UnexpectedUndefinedError= require('../errors/unexpected-undefined-error');
-const debug = require('debug')('http-response-assert:xpath-handler');
 const matcher = require('../matcher');
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;

@@ -18,6 +18,20 @@ Requests are done using the widely known [“request” npm module](https://www.
 *To be added*
 
 
+## Debug output
+
+This module uses the [debug module](https://www.npmjs.com/package/debug) for enabling debug output. This means that using an environemnt variable named “DEBUG” you can control whether you would like to get debug output for this module and, if yes, what kind of debug output:
+
+To get debug output only for the module core (`index.js`), use it like this:
+`DEBUG=@bluem/http-response-assert node script.js`
+
+To get debug output for a specific assertion handler (example: the handler for testing JSON path expressions), use it like this:
+`DEBUG=@bluem/@bluem/http-response-assert:handler:json node script.js`
+
+You may also use `*` as a wildcard, so the following will both work:
+`DEBUG=@bluem/http-response-assert* node script.js`
+`DEBUG=@bluem/@bluem/http-response-assert:handler:* node script.js`
+
 # Known problems
 
 ## Text matcher

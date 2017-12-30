@@ -1,4 +1,4 @@
-const debug = require('debug')('http-response-assert');
+const debug = require('debug')('@bluem/http-response-assert');
 const request = require('request');
 const split = require('argv-split');
 
@@ -89,12 +89,12 @@ module.exports = class {
     performCheck(req, assertions) {
         return new Promise((resolve, reject) => {
 
-            debug('Request: %s', req.uri);
+            debug('Request: %s %s', req.method, req.uri);
 
             request(
                 req,
                 (error, response, body) => {
-                    debug('Got response for: %s', req.uri);
+                    debug('Response: %s %s', req.method, req.uri);
 
                     if (error) {
                         let errString = `${req.method} ${req.uri} (${error})`;
@@ -149,37 +149,25 @@ module.exports = class {
     }
 
     getHandler(matcherString) {
-        let matcher;
-
         switch (matcherString.toLowerCase()) {
             case 'header':
-                matcher = headerHandler;
-                break;
+                return headerHandler;
 
             case 'code':
-                matcher = statusCodeHandler;
-                break;
+                return statusCodeHandler;
 
             case 'css':
             case 'selector':
-                matcher = selectorHandler;
-                break;
+                return selectorHandler;
 
             case 'xpath':
-                matcher = xpathHandler;
-                break;
+                return xpathHandler;
 
             case 'json':
-                matcher = jsonPointerHandler;
-                break;
+                return jsonPointerHandler;
 
             case 'text':
-                matcher = textHandler;
-                break;
+                return textHandler;
         }
-
-        debug('Matcher: %o', matcher);
-
-        return matcher;
     }
 };

@@ -1,4 +1,4 @@
-const debug = require('debug')('http-response-assert:selector-handler');
+const debug = require('debug')('@bluem/http-response-assert:handler:selector');
 const matcher = require('../matcher');
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;

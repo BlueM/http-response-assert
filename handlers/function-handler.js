@@ -1,4 +1,4 @@
-const debug = require('debug')('http-response-assert:function-handler');
+const debug = require('debug')('@bluem/http-response-assert:handler:function');
 
 /**
  * @todo
