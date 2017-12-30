@@ -41,7 +41,7 @@ module.exports = class {
         }
 
         if (!Array.isArray(assertions)) {
-            throw new Error('Assertions must be given as an array');
+            throw new Error(`Assertions must be given as an array (error caused when adding checks for ${req.method} request to ${req.uri})`);
         } else if (!assertions.length) {
             throw new Error(`No assertions are defined for ${req.method} request for ${req.uri}`);
         }
