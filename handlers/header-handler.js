@@ -2,7 +2,8 @@ const debug = require('debug')('@bluem/http-response-assert:handler:header');
 const matcher = require('../matcher');
 
 /**
- * Performs case-insensitive check on a expected response header vs. actual response header
+ * Performs case-sensitive check on a expected response header vs. actual response header
+ *
  * Example assertions:
  *   - Header "Content-Type" contains "text/html"
  *   - Header "Content-Type" is "text/html; charset=utf-8"
