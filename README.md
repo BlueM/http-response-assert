@@ -131,6 +131,12 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # ToDo
 
+## Handler aliases
+Nice additions would be:
+
+* “Status code” as alias for “Code”
+* “JSON pointer” as alias for “JSON”
+
 ## RegEx matching
 It should be possible to specify an assertion using a RegEx, for instance `Text matches "/foo[0-9]+bar/"`.
 
