@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "argv-split": "^2.0.1",
-    "html2plaintext": "^1.0.1",
+    "html2plaintext": "^2.0.1",
     "jsdom": "^11.5.1",
     "jsonpointer": "^4.0.1",
     "request": "^2.79.0"

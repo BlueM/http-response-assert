@@ -32,10 +32,6 @@ You may also use `*` as a wildcard, so the following will both work:
 `DEBUG=@bluem/http-response-assert* node script.js`
 `DEBUG=@bluem/@bluem/http-response-assert:handler:* node script.js`
 
-# Known problems
-
-## Text matcher
-* When converting HTML to plaintext, text inside `<script>` or `<style>` is not removed.
 
 
 # ToDo
