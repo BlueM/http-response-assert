@@ -24,7 +24,7 @@ Out of the box, this module is able to:
 
 # Usage
 
-Usage is simple and straigtforward:
+Usage is simple and straightforward:
 
 * ``require()`` the module
 * Instantiate the class you imported from the module
@@ -63,7 +63,7 @@ The function should return either `null` (assertion passed) or a string describi
 The following example will check the behavior of http://example.com. It uses all currently existing handlers, with the exception of the JSON handler, which just would not make sense for an HTML document.
 
 ```js
-const HttpResponseAssert = require('./index.js');
+const HttpResponseAssert = require('@bluem/http-response-assert');
 
 let hra = new HttpResponseAssert;
 
@@ -105,7 +105,7 @@ hra.run()
    })
    .catch((err) => {
        // Some kind of failure
-       // Do whatever is appropriate: log it, send mail, notify via Slack, ... 
+       // Do whatever is appropriate: log it, send mail, notify via Slack, ...
        console.error(err);
    });
 ```
