@@ -32,41 +32,41 @@ function myFunc() {
 
 describe('Text handler', () => {
     it('should throw an error when used with an unexpected MIME type', () => {
-        expect(() => textHandler({'content-type': 'application/pdf'}, 200, '', ['contains', 'foo']))
+        expect(() => textHandler.check({'content-type': 'application/pdf'}, 200, '', ['contains', 'foo']))
             .toThrowError('Unsupported MIME type: application/pdf');
     });
 
     it('should find text in HTML text nodes', () => {
-        expect(textHandler(htmlContentType, 200, html, ['contains', 'in paragraph']))
+        expect(textHandler.check(htmlContentType, 200, html, ['contains', 'in paragraph']))
             .toBe(null);
     });
 
     it('should not find text in HTML attributes or HTML comments', () => {
-        expect(textHandler(htmlContentType, 200, html, ['does not contain', 'findmenot']))
+        expect(textHandler.check(htmlContentType, 200, html, ['does not contain', 'findmenot']))
             .toBe(null);
     });
 
     it('should not find HTML attributes', () => {
-        expect(textHandler(htmlContentType, 200, html, ['does not contain', 'class']))
+        expect(textHandler.check(htmlContentType, 200, html, ['does not contain', 'class']))
             .toBe(null);
     });
 
     it('should find everywhere in JS for application/javascript', () => {
-        expect(textHandler(jsContentType1, 200, js, ['contains', 'function myFunc']))
+        expect(textHandler.check(jsContentType1, 200, js, ['contains', 'function myFunc']))
             .toBe(null);
     });
 
     it('should find everywhere in JS for text/javascript', () => {
-        expect(textHandler(jsContentType2, 200, js, ['contains', 'Hello world']))
+        expect(textHandler.check(jsContentType2, 200, js, ['contains', 'Hello world']))
             .toBe(null);
     });
 
     it('should find everywhere in CSS', () => {
-        expect(textHandler(cssContentType, 200, css, ['contains', 'some-class']))
+        expect(textHandler.check(cssContentType, 200, css, ['contains', 'some-class']))
             .toBe(null);
-        expect(textHandler(cssContentType, 200, css, ['contains', 'margin-top']))
+        expect(textHandler.check(cssContentType, 200, css, ['contains', 'margin-top']))
             .toBe(null);
-        expect(textHandler(cssContentType, 200, css, ['contains', 'Helvetica']))
+        expect(textHandler.check(cssContentType, 200, css, ['contains', 'Helvetica']))
             .toBe(null);
     });
 });

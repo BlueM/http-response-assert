@@ -4,6 +4,10 @@ const matcher = require('../matcher');
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 
+function supports(typeIdentifier) {
+    return typeIdentifier === 'xpath';
+}
+
 /**
  * @todo
  *
@@ -14,7 +18,7 @@ const {JSDOM} = jsdom;
  *
  * @returns {*}
  */
-module.exports = function (headers, statusCode, body, matcherData) {
+function check(headers, statusCode, body, matcherData) {
 
     if (matcherData.length < 2) {
         throw new Error('Invalid assertion');
@@ -69,4 +73,6 @@ module.exports = function (headers, statusCode, body, matcherData) {
     }
 
     return `XPath “${xPath}”: ${result}`;
-};
+}
+
+module.exports = {supports, check};

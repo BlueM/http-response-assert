@@ -2,6 +2,10 @@ const debug = require('debug')('@bluem/http-response-assert:handler:json');
 const jsonPointer = require('jsonpointer');
 const matcher = require('../matcher');
 
+function supports(typeIdentifier) {
+    return typeIdentifier === 'json';
+}
+
 /**
  * Performs case-sensitive checks on JSON path expressions
  *
@@ -12,7 +16,7 @@ const matcher = require('../matcher');
  *
  * @returns {*}
  */
-module.exports = function (headers, statusCode, body, matcherData) {
+function check(headers, statusCode, body, matcherData) {
 
     debug('matcherData: %o', matcherData);
 
@@ -42,4 +46,6 @@ module.exports = function (headers, statusCode, body, matcherData) {
     }
 
     return `Check for JSON pointer “${jsonPointerPath}”: ${result}`;
-};
+}
+
+module.exports = {supports, check};

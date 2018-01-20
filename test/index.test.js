@@ -86,7 +86,6 @@ describe('http-response-assert', () => {
             ];
             hra.run()
                 .catch((msg) => {
-                    console.log('index.test.js: 93'); // #debug
                     expect(msg).toBe('0 URL successful, 1 failures:\nFailure')
                 });
         });

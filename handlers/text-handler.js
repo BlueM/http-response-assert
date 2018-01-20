@@ -2,6 +2,10 @@ const debug = require('debug')('@bluem/http-response-assert:handler:text');
 const matcher = require('../matcher');
 const htmlToPlaintext = require('html2plaintext');
 
+function supports(typeIdentifier) {
+    return typeIdentifier === 'text';
+}
+
 /**
  * @todo
  *
@@ -12,7 +16,7 @@ const htmlToPlaintext = require('html2plaintext');
  *
  * @returns {*}
  */
-module.exports = function (headers, statusCode, body, matcherData) {
+function check(headers, statusCode, body, matcherData) {
 
     debug('matcherData: %o', matcherData);
 
@@ -24,7 +28,7 @@ module.exports = function (headers, statusCode, body, matcherData) {
     }
 
     return `Text: ${result}`;
-};
+}
 
 function getPlaintext(rawContentTypeHeader, body) {
     if (!rawContentTypeHeader) {
@@ -52,3 +56,5 @@ function getPlaintext(rawContentTypeHeader, body) {
             throw new Error('Unsupported MIME type: ' + mimeType);
     }
 }
+
+module.exports = {supports, check};

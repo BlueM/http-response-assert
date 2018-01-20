@@ -19,6 +19,7 @@ Out of the box, this module is able to:
 * Perform checks (either existence, non-existence or content) using CSS selectors
 * Perform checks (either existence, non-existence or content) using JSON pointer expressions
 * Perform checks (either existence, non-existence or content) using XPath pointer expressions
+* Perform checks on the raw response body
 * Perform completely arbitrary checks using callback functions
 
 
@@ -41,7 +42,9 @@ In each assertion, the first word (which is treated case-insensitively) must spe
 * `CSS` for assertions based on a CSS selector applied to the response body
 * `Header` for assertions based on a received HTTP header
 * `JSON` for assertions based on a JSON path expression applied to the response body
+* `Raw` for assertions based on the raw, unprocessed response body. (For better readability, you can also write “Raw body” or “Raw content” instead of “Raw”.)
 * `Selector` is an alias for `CSS`
+* `Status` is an alias for `Code`
 * `Text` for assertions based on a plaintext representation of the response body
 * `XPath` for assertions based on an XPath expression applied to the response body
 
@@ -58,6 +61,15 @@ Instead of an assertion string, you can also include a function in the assertion
 
 The function should return either `null` (assertion passed) or a string describing the error(s).
 
+
+### Custom handlers
+
+If you need an assertion handler which is not included and do not want to use an anonymous function, you can load additional handler(s) from a directory you pass in an options object to the constructor:
+
+    new HttpResponseAssert({handlerDir: './my-handlers-directory'});
+
+This way, you could also overwrite an included handler: handlers are read and kept in an object with the filename (minus extension) as property, you can replace an included handler by having an own handler with the same filename as an existing handler.
+ 
 
 ## Example
 The following example will check the behavior of http://example.com. It uses all currently existing handlers, with the exception of the JSON handler, which just would not make sense for an HTML document.
@@ -140,8 +152,13 @@ Nice additions would be:
 ## RegEx matching
 It should be possible to specify an assertion using a RegEx, for instance `Text matches "/foo[0-9]+bar/"`.
 
-## Loading own handlers
-It should be possible to load own assertion handlers.
-
 ## Track timing
 It should be possible to record information on the time needed for requests.
+
+
+# Change
+
+## 0.4
+* Constructor function takes option object which supports keys "timeout" and "agent" for setting request timeout and user agent string.
+* Additional handlers can be loaded from a directory to be specified using key "handlerDir" on the options object
+ 

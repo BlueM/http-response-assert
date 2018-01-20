@@ -1,6 +1,10 @@
 const debug = require('debug')('@bluem/http-response-assert:handler:header');
 const matcher = require('../matcher');
 
+function supports(typeIdentifier) {
+    return typeIdentifier === 'header';
+}
+
 /**
  * Performs case-sensitive check on a expected response header vs. actual response header
  *
@@ -17,7 +21,7 @@ const matcher = require('../matcher');
  *
  * @returns {*}
  */
-module.exports = function (headers, statusCode, body, matcherData) {
+function check(headers, statusCode, body, matcherData) {
 
     debug('matcherData: %o', matcherData);
 
@@ -37,4 +41,6 @@ module.exports = function (headers, statusCode, body, matcherData) {
     }
 
     return `Header “${headerName}”: ${result}`;
-};
+}
+
+module.exports = {supports, check};

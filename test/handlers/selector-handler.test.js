@@ -15,20 +15,20 @@ const html = `<html>
 
 describe('Selector handler', () => {
     it('should throw an error if the matcher data consists of < 2 items', () => {
-        expect(() => selectorHandler({}, 200, '', ['contains'])).toThrow();
+        expect(() => selectorHandler.check({}, 200, '', ['contains'])).toThrow();
     });
 
     it('should return an error message if a selector does not match anything', () => {
-        expect(selectorHandler({}, 200, html, ['li strong', 'contains']))
+        expect(selectorHandler.check({}, 200, html, ['li strong', 'contains']))
             .toEqual('Selector “li strong”: Does not match anything in the document');
     });
 
     it('should return an error message if a selector matches, but assertion fails', () => {
-        expect(selectorHandler({}, 200, html, ['li a', 'contains', 'blah']))
+        expect(selectorHandler.check({}, 200, html, ['li a', 'contains', 'blah']))
             .toEqual('Selector “li a”: Expected “a link” to contain “blah”');
     });
 
     it('should return null if a selector matches and assertion succeeds', () => {
-        expect(selectorHandler({}, 200, html, ['li a', 'is', 'a link'])).toBe(null);
+        expect(selectorHandler.check({}, 200, html, ['li a', 'is', 'a link'])).toBe(null);
     });
 });

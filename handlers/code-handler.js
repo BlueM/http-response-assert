@@ -1,5 +1,9 @@
 const debug = require('debug')('@bluem/http-response-assert:handler:code');
 
+function supports(typeIdentifier) {
+    return typeIdentifier === 'code' || typeIdentifier === 'status';
+}
+
 /**
  * @todo
  *
@@ -10,14 +14,17 @@ const debug = require('debug')('@bluem/http-response-assert:handler:code');
  *
  * @returns {*}
  */
-module.exports = function (headers, statusCode, body, matcherData) {
+function check(headers, statusCode, body, matcherData) {
 
     debug('matcherData: %o', matcherData);
 
     if (matcherData.length !== 2 ||
         matcherData[0].toLowerCase() !== 'is' ||
         !matcherData[1].match(/^\d{3}$/)) {
-        throw new Error('The status code matcher expects the assertion to be “is XXX”, where “XXX is a three-digit HTTP status code');
+        throw new Error(
+            'The status code matcher expects the assertion to be “is XXX”, ' +
+            'where “XXX is a three-digit HTTP status code'
+        );
     }
 
     if (String(statusCode) === String(matcherData[1])) {
@@ -25,4 +32,6 @@ module.exports = function (headers, statusCode, body, matcherData) {
     }
 
     return `Expected status code ${matcherData[1]}, got ${statusCode}`;
-};
+}
+
+module.exports = {supports, check};

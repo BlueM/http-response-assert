@@ -1,23 +1,29 @@
 const debug = require('debug')('@bluem/http-response-assert');
 const request = require('request');
 const split = require('argv-split');
-
-const headerHandler = require('./handlers/header-handler.js');
-const statusCodeHandler = require('./handlers/code-handler.js');
-const textHandler = require('./handlers/text-handler.js');
+const requireDirectory = require('require-directory');
+const handlers = requireDirectory(module, './handlers', {exclude: /function-handler\.js$/});
 const functionHandler = require('./handlers/function-handler.js');
-const selectorHandler = require('./handlers/selector-handler');
-const xpathHandler = require('./handlers/xpath-handler');
-const jsonPointerHandler = require('./handlers/json-handler');
 
 module.exports = class {
 
-    constructor() {
+    /**
+     * Create object with the given options
+     *
+     * @param options Object with 0 or more of properties: "handlerDir" (filesystem path to a
+     *                directory containing additional handler(s)), "timeout" (Request timeout
+     *                time in milliseconds, defaults to 3000), "agent" (user-agent string to
+     *                send with request)
+     */
+    constructor(options = {}) {
         this.succeeded = 0;
         this.alerts = [];
         this.checks = [];
-        this.timeout = 3000; // In milliseconds
-        this.agent = 'http-response-assert';
+        this.agent = options.agent || 'http-response-assert';
+        this.timeout = +options.timeout > 0 ? +options.timeout : 3000;
+        if (options.handlerDir) {
+            this.loadExtraHandlers(options.handlerDir);
+        }
     }
 
     addCheck(url, assertions, req) {
@@ -148,26 +154,37 @@ module.exports = class {
         return testResults;
     }
 
+    /**
+     * Returns the first handler object which declares itself capable of
+     * handling an assertion of the given type.
+     *
+     * @param matcherString
+     * @returns {undefined|Function}
+     */
     getHandler(matcherString) {
-        switch (matcherString.toLowerCase()) {
-            case 'header':
-                return headerHandler;
+        const type = matcherString.toLowerCase();
+        for (const handler in handlers) {
+            if (handlers[handler].supports(type)) {
+                debug('Handler: %s', handler);
+                return handlers[handler].check;
+            }
+        }
+    }
 
-            case 'code':
-                return statusCodeHandler;
-
-            case 'css':
-            case 'selector':
-                return selectorHandler;
-
-            case 'xpath':
-                return xpathHandler;
-
-            case 'json':
-                return jsonPointerHandler;
-
-            case 'text':
-                return textHandler;
+    /**
+     * Loads assertion handlers from the directory given as argument
+     *
+     * @param dir Directory path
+     */
+    loadExtraHandlers(dir) {
+        let extraHandlers;
+        try {
+            extraHandlers = requireDirectory(module, dir);
+        } catch (e) {
+            throw new Error(`Directory ${dir} is invalid`);
+        }
+        for (const handler in extraHandlers) {
+            handlers[handler] = extraHandlers[handler];
         }
     }
 };
