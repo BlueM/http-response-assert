@@ -54,6 +54,24 @@ module.exports = function (actualValue, matcherData) {
         return null;
     }
 
+    // matches not
+    // does not match
+    if (['matches not', 'not matches', 'does not match'].indexOf(matcherData.slice(0, -1).join(' ').toLowerCase()) > -1) {
+        const value = matcherData.pop();
+        if (actualValue.match(new RegExp(value))) {
+            return `Expected “${actualValue}” to not match /${value}/`;
+        }
+        return null;
+    }
+
+    // matches
+    if ('matches' === matcherData[0].toLowerCase()) {
+        if (!actualValue.match(new RegExp(matcherData[1]))) {
+            return `Expected “${actualValue}” to match /${matcherData[1]}/`;
+        }
+        return null;
+    }
+
     // is
     // equals
     if (['is', 'equals'].indexOf(matcherData[0].toLowerCase()) > -1) {

@@ -15,6 +15,7 @@ hra.addCheck(
         // converted to plaintext with tags, comments, <script>
         // and <style> removed.
         'Text contains "You may use this domain"',
+        'Text matches "You [a-z ]+ domain"',
         'Text does not contain "Error"',
         'Text does not contain "font-family"',
         // CSS selector check
@@ -42,5 +43,6 @@ hra.run()
     })
     .catch((err) => {
         // Some kind of failure
+        // Do whatever is appropriate: log it, send mail, notify via Slack, ...
         console.error(err);
     });

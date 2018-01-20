@@ -58,6 +58,38 @@ describe('Matcher', () => {
         });
     });
 
+    describe('can match against a RegEx', () => {
+        ['matches'].forEach((string) => {
+            it(`when called with “${string}”`, () => {
+                expect(matcher('Hello world', [string, '^Hel+o +[wW]orld$'])).toBeNull();
+            });
+        });
+    });
+
+    describe('can match against a RegEx which is supposed to not match', () => {
+        ['matches not', 'not matches', 'does not match'].forEach((string) => {
+            it(`when called with “${string}”`, () => {
+                expect(matcher('Hello world', [string, '^Hel+o +World$'])).toBeNull();
+            });
+        });
+    });
+
+    describe('reports a non-matching RegEx which should have matched', () => {
+        ['matches'].forEach((string) => {
+            it(`when called with “${string}”`, () => {
+                expect(matcher('Hello world', [string, '^Hel+o World$'])).toBe('Expected “Hello world” to match /^Hel+o World$/');
+            });
+        });
+    });
+
+    describe('reports a matching RegEx which should not have matched', () => {
+        ['matches not', 'not matches', 'does not match'].forEach((string) => {
+            it(`when called with “${string}”`, () => {
+                expect(matcher('Hello world', [string, '^Hel+o world$'])).toBe('Expected “Hello world” to not match /^Hel+o world$/');
+            });
+        });
+    });
+
     describe('identifies absence of forbidden substring', () => {
         ['not contains', 'does not contain', 'contains not'].forEach((string) => {
             it(`when called with “${string}”`, () => {

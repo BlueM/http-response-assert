@@ -69,57 +69,60 @@ If you need an assertion handler which is not included and do not want to use an
     new HttpResponseAssert({handlerDir: './my-handlers-directory'});
 
 This way, you could also overwrite an included handler: handlers are read and kept in an object with the filename (minus extension) as property, you can replace an included handler by having an own handler with the same filename as an existing handler.
- 
+
 
 ## Example
 The following example will check the behavior of http://example.com. It uses all currently existing handlers, with the exception of the JSON handler, which just would not make sense for an HTML document.
 
 ```js
-const HttpResponseAssert = require('@bluem/http-response-assert');
+const HttpResponseAssert = require('./index.js');
 
-let hra = new HttpResponseAssert;
+let hra = new HttpResponseAssert();
 
 hra.addCheck(
-   `http://example.com`,
-   [
-       // Check for status code
-       'Code is 200',
-       // Header checks
-       // Note: header names are treated case-insensitively
-       'Header "X-Content-Type-Options" is not set',
-       'Header "Content-Type" starts with "text/html"',
-       // Plaintext checks, with HTML content automatically
-       // converted to plaintext with tags, comments, <script>
-       // and <style> removed.
-       'Text contains "You may use this domain"',
-       'Text does not contain "Error"',
-       'Text does not contain "font-family"',
-       // CSS selector check
-       'Selector "div > p" contains "illustrative examples"',
-       // XPath check
-       `XPath "//h1" is "Example Domain"`,
-       // Custom assertion function
-       (headers, statusCode, body) => {
-           // Useless example, as this could have been done
-           // easier using 'Text contains "examples"'.
-           if (-1 === body.indexOf('examples')) {
-               return 'Expected body to contain “examples”';
-           }
-           return null;
-       }
-   ]
+    'http://example.com',
+    [
+        // Check for status code
+        'Code is 200',
+        // Header checks
+        // Note: header names are treated case-insensitively
+        'Header "X-Content-Type-Options" is not set',
+        'Header "Content-Type" starts with "text/html"',
+        // Plaintext checks, with HTML content automatically
+        // converted to plaintext with tags, comments, <script>
+        // and <style> removed.
+        'Text contains "You may use this domain"',
+        'Text matches "You [a-z ]+ domain"',
+        'Text does not contain "Error"',
+        'Text does not contain "font-family"',
+        // CSS selector check
+        'Selector "div > p" contains "illustrative examples"',
+        // Raw body check
+        'Raw body contains "<h1>Example Domain</h1>"',
+        // XPath check
+        `XPath "//h1" is "Example Domain"`,
+        // Custom assertion callback
+        (headers, statusCode, body) => {
+            // Useless example, as this could have been done
+            // easier using 'Text contains "examples"'.
+            if (-1 === body.indexOf('examples')) {
+                return 'Expected body to contain “examples”';
+            }
+            return null;
+        }
+    ]
 );
 
 hra.run()
-   .then((msg) => {
-       // Success
-       console.log(msg);
-   })
-   .catch((err) => {
-       // Some kind of failure
-       // Do whatever is appropriate: log it, send mail, notify via Slack, ...
-       console.error(err);
-   });
+    .then((msg) => {
+        // Success
+        console.log(msg);
+    })
+    .catch((err) => {
+        // Some kind of failure
+        // Do whatever is appropriate: log it, send mail, notify via Slack, ...
+        console.error(err);
+    });
 ```
 
 
@@ -149,16 +152,13 @@ Nice additions would be:
 * “Status code” as alias for “Code”
 * “JSON pointer” as alias for “JSON”
 
-## RegEx matching
-It should be possible to specify an assertion using a RegEx, for instance `Text matches "/foo[0-9]+bar/"`.
 
 ## Track timing
 It should be possible to record information on the time needed for requests.
 
 
-# Change
+# Changes
 
-## 0.4
+## 0.4 (2018-01-20)
 * Constructor function takes option object which supports keys "timeout" and "agent" for setting request timeout and user agent string.
 * Additional handlers can be loaded from a directory to be specified using key "handlerDir" on the options object
- 
