@@ -1,6 +1,6 @@
 # Overview
 
-`http-response-assert` is a Node.js module for performing assertions on HTTP responses which are received after sending requests. These assertions can include things like status code, HTTP headers, response text or CSS selectors and are therefore suitable for simple website or API behavior monitoring.
+`@bluem/http-response-assert` is a Node.js module for performing assertions on HTTP responses which are received after sending requests. These assertions can include things like status code, HTTP headers, response text or CSS selectors and are therefore suitable for simple website or API behavior monitoring.
 
 While the module is basically generic, it was written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc), in order to perform simple behaviour verification of web applications. Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched and automatically deployed.
 
@@ -28,10 +28,22 @@ Out of the box, this module is able to:
 Usage is simple and straightforward:
 
 * ``require()`` the module
-* Instantiate the class you imported from the module
+* Instantiate the class you imported from the module (optionally, give options to the constructor function)
 * Invoke the `addCheck()` method on the instance, giving it a URL, an array of assertions (see below) and, optionally, request options
 * Add more `addCheck()` calls, if needed
 * Invoke the `run()` method, which will return a promise which will either resolve to a success string (no network problems, all assertions passed) or an error string (network problems and/or at least one assertion failed)
+
+## Options
+When calling the constructor function, you can pass in an object with any of these options:
+
+* `handlerDir`: Filesystem path to a directory containing additional handlers (i.e.: small modules which provide checks of a certain type); defaults to none
+* `timeout`: Request timeout in milliseconds; defaults to 3000
+* `agent`: User-agent string to send with request; defaults to “http-response-assert”
+* `concurrency`: Number of concurrent requests to open; defaults to 1
+* `delay`: Number of milliseconds to wait before sending the next request; defaults to 100
+
+As you can see, the default options are rather conservative when it comes to load on the target server. For example, if you wanted to use up to 10 simultaneous requests and delay them each by 20 milliseconds, you could specify the options as `{concurrency: 10, delay: 20}` to speed things up.
+
 
 ## Assertions
 Each assertion (with the exception of custom assertion functions) should be a (more or less) “sentence” describing the desired behavior – example: “Text does not contain "Hello world"”. After the response is received, in this example it will be passed on to the text handler, which will convert the response body (HTML, JSON, XML, ...) to plaintext and then verify that the phrase “Hello world” is not present.
@@ -130,7 +142,7 @@ hra.run()
 
 This module uses the [debug module](https://www.npmjs.com/package/debug) for enabling debug output. This means that using an environemnt variable named “DEBUG” you can control whether you would like to get debug output for this module and, if yes, what kind of debug output:
 
-* To get debug output only for the module core (`index.js`), use it like this: `DEBUG=@bluem/http-response-assert node script.js`
+* To get debug output only for the module core (`index.js`), use it like this: `DEBUG=@bluem/http-response-assert,@bluem/http-response-assert:network:* node script.js`
 
 * To get debug output for a specific assertion handler (example: the handler for testing JSON path expressions), use it like this: `DEBUG=@bluem/@bluem/http-response-assert:handler:json node script.js`
 

@@ -1,4 +1,6 @@
 const debug = require('debug')('@bluem/http-response-assert');
+const debugReq = require('debug')('@bluem/http-response-assert:network:request');
+const debugResp = require('debug')('@bluem/http-response-assert:network:response');
 const request = require('request');
 const split = require('argv-split');
 const requireDirectory = require('require-directory');
@@ -13,7 +15,9 @@ module.exports = class {
      * @param options Object with 0 or more of properties: "handlerDir" (filesystem path to a
      *                directory containing additional handler(s)), "timeout" (Request timeout
      *                time in milliseconds, defaults to 3000), "agent" (user-agent string to
-     *                send with request)
+     *                send with request), "concurrency" (number of concurrent requests to send,
+     *                defaults to 1), "delay" (number of milliseconds to wait before sending
+     *                the next request, defaults to 100)
      */
     constructor(options = {}) {
         this.succeeded = 0;
@@ -21,6 +25,9 @@ module.exports = class {
         this.checks = [];
         this.agent = options.agent || 'http-response-assert';
         this.timeout = +options.timeout > 0 ? +options.timeout : 3000;
+        this.running = 0;
+        this.concurrency = +options.concurrency > 1 ? +options.concurrency : 1;
+        this.delay = +options.delay >= 0 ? +options.delay : 100;
         if (options.handlerDir) {
             this.loadExtraHandlers(options.handlerDir);
         }
@@ -71,18 +78,33 @@ module.exports = class {
     }
 
     executeNextCheck(resolve, reject) {
+
+        const exec = () => {
+            setTimeout(
+                () => this.executeNextCheck(resolve, reject),
+                this.checks.length ? this.delay : 0
+            );
+        };
+
         if (this.checks.length) {
             let check = this.checks.shift();
+            this.running ++;
             let p = this.performCheck(check.request, check.assertions);
             p.then(() => {
-                this.succeeded++;
-                this.executeNextCheck(resolve, reject);
+                this.running --;
+                this.succeeded ++;
+                exec();
             })
             .catch((message) => {
+                this.running --;
                 this.alerts.push(message);
-                this.executeNextCheck(resolve, reject);
+                exec();
             });
-        } else {
+
+            if (this.running < this.concurrency) {
+                exec();
+            }
+        } else if (0 === this.running) {
             let astr = `${this.succeeded} ${this.succeeded > 1 ? 'URLs' : 'URL'} successful, ${this.alerts.length} failures`;
             if (this.alerts.length) {
                 reject(astr + ':\n' + this.alerts.join('\n'));
@@ -95,12 +117,12 @@ module.exports = class {
     performCheck(req, assertions) {
         return new Promise((resolve, reject) => {
 
-            debug('Request: %s %s', req.method, req.uri);
+            debugReq('Request: %s %s', req.method, req.uri);
 
             request(
                 req,
                 (error, response, body) => {
-                    debug('Response: %s %s', req.method, req.uri);
+                    debugResp('Response: %s %s', req.method, req.uri);
 
                     if (error) {
                         let errString = `${req.method} ${req.uri} (${error})`;
