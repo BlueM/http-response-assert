@@ -171,6 +171,10 @@ It should be possible to record information on the time needed for requests.
 
 # Changes
 
+## 0.5 (2018-01-21)
+* Number of concurrent requests and delay between requests can be specified through the options passed to the constructor function.
+* New matcher: “matches” for RegEx matching and “matches not” or “not matches” or “does not match” for making sure a RegEx does not match (see example above).
+
 ## 0.4 (2018-01-20)
 * Constructor function takes option object which supports keys "timeout" and "agent" for setting request timeout and user agent string.
 * Additional handlers can be loaded from a directory to be specified using key "handlerDir" on the options object
