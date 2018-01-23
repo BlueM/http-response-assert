@@ -1,4 +1,4 @@
-const HttpResponseAssert = require('./index.js');
+const HttpResponseAssert = require('@bluem/http-response-assert');
 
 let hra = new HttpResponseAssert();
 

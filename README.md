@@ -87,7 +87,7 @@ This way, you could also overwrite an included handler: handlers are read and ke
 The following example will check the behavior of http://example.com. It uses all currently existing handlers, with the exception of the JSON handler, which just would not make sense for an HTML document.
 
 ```js
-const HttpResponseAssert = require('./index.js');
+const HttpResponseAssert = require('@bluem/http-response-assert');
 
 let hra = new HttpResponseAssert();
 
