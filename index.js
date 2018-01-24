@@ -20,9 +20,8 @@ module.exports = class {
      *                the next request, defaults to 100)
      */
     constructor(options = {}) {
-        this.succeeded = 0;
-        this.alerts = [];
         this.checks = [];
+        this.results = [];
         this.agent = options.agent || 'http-response-assert';
         this.timeout = +options.timeout > 0 ? +options.timeout : 3000;
         this.running = 0;
@@ -33,8 +32,7 @@ module.exports = class {
         }
     }
 
-    addCheck(url, assertions, req) {
-
+    addTest(url, assertions, req) {
         if ('string' === typeof req) {
             req = {method: req};
         } else if (!req) {
@@ -48,6 +46,8 @@ module.exports = class {
         }
         req.headers['User-Agent'] = this.agent;
         req.uri = url;
+
+        req.time = true;
 
         if (!req.timeout || +req.timeout <= 1) {
             req.timeout = this.timeout;
@@ -89,15 +89,18 @@ module.exports = class {
         if (this.checks.length) {
             let check = this.checks.shift();
             this.running ++;
-            let p = this.performCheck(check.request, check.assertions);
-            p.then(() => {
+            const requestTitle = check.request.title || this.createTestTitle(check.request);
+            let p = this.performTest(check.request, check.assertions);
+            p.then((resolveValue) => {
                 this.running --;
-                this.succeeded ++;
+                resolveValue.title = requestTitle;
+                this.results.push(resolveValue);
                 exec();
             })
-            .catch((message) => {
+            .catch((rejectValue) => {
                 this.running --;
-                this.alerts.push(message);
+                rejectValue.title = requestTitle;
+                this.results.push(rejectValue);
                 exec();
             });
 
@@ -105,16 +108,26 @@ module.exports = class {
                 exec();
             }
         } else if (0 === this.running) {
-            let astr = `${this.succeeded} ${this.succeeded > 1 ? 'URLs' : 'URL'} successful, ${this.alerts.length} failures`;
-            if (this.alerts.length) {
-                reject(astr + ':\n' + this.alerts.join('\n'));
+            const failureMessages = this.results.filter(stats => stats.error).map(stats => stats.error);
+            const failed = failureMessages.length;
+            const succeeded = this.results.length - failed;
+
+            let summary = `${succeeded} test(s) passed, ${failed} test(s) failed`;
+            if (failed) {
+                reject({results: this.results, summary: summary + ':\n' + failureMessages.join('\n')});
             } else {
-                resolve(astr);
+                resolve({results: this.results, summary});
             }
         }
     }
 
-    performCheck(req, assertions) {
+    createTestTitle(request) {
+        // Preliminary implementation with room for improvement: include info
+        // on response body, form data, ...
+        return `${request.method} ${request.uri}`;
+    }
+
+    performTest(req, assertions) {
         return new Promise((resolve, reject) => {
 
             debugReq('Request: %s %s', req.method, req.uri);
@@ -124,21 +137,33 @@ module.exports = class {
                 (error, response, body) => {
                     debugResp('Response: %s %s', req.method, req.uri);
 
+                    const resolveRejectValue = {
+                        success: false,
+                        timingStart: response.timingStart,
+                        timings: response.timings,
+                        timingPhases: response.timingPhases,
+                    };
+
                     if (error) {
                         let errString = `${req.method} ${req.uri} (${error})`;
                         debug(`Execution failed: ${errString} -- ${req.uri}`);
-                        reject('Execution failed: ' + errString);
+                        resolveRejectValue.error = `Execution failed: ${errString}`;
+                        reject(resolveRejectValue);
                         return;
                     }
 
-                    const testResults = this.getAssertionsResult(assertions, response, body);
-                    if (testResults.length) {
-                        reject(
-                            `${testResults.length} assertion(s) failed for ${req.method} ${req.uri}\n` +
-                            `   * ${testResults.join('\n   * ')}`
-                        );
+                    const results = this.getAssertionsResult(assertions, response, body);
+                    resolveRejectValue.passed = results.passed;
+                    resolveRejectValue.failed = results.failed;
+
+                    if (results.failed.length) {
+                        resolveRejectValue.summary = `${results.failed.length} assertion(s) failed for ${req.method} ${req.uri}\n` +
+                                                     `   * ${results.failed.join('\n   * ')}`;
+                        reject(resolveRejectValue);
                     } else {
-                        resolve();
+                        resolveRejectValue.success = true;
+                        resolveRejectValue.summary = `Passed ${results.passed.length} assertion(s)`;
+                        resolve(resolveRejectValue);
                     }
                 }
             );
@@ -146,7 +171,7 @@ module.exports = class {
     }
 
     getAssertionsResult(assertions, response, body) {
-        let testResults = [];
+        let testResults = {passed: [], failed: []};
         assertions.forEach((assertion) => {
             let assertionData;
             let matcher;
@@ -167,7 +192,9 @@ module.exports = class {
                     assertionData
                 );
                 if (failure) {
-                    testResults.push(failure);
+                    testResults.failed.push(failure);
+                } else {
+                    testResults.passed.push(assertion);
                 }
             } else {
                 throw new Error(`No matcher found for:\n  ${assertion}`);

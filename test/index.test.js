@@ -10,13 +10,13 @@ describe('http-response-assert', () => {
     describe('should reject checks', () => {
         it('if the assertions are not an array', () => {
             const hra = new HttpResponseAssert();
-            expect(() => hra.addCheck('http://example.com'))
+            expect(() => hra.addTest('http://example.com'))
                 .toThrowError('Assertions must be given as an array');
         });
 
         it('if the assertions are an empty array', () => {
             const hra = new HttpResponseAssert();
-            expect(() => hra.addCheck('http://example.com', []))
+            expect(() => hra.addTest('http://example.com', []))
                 .toThrowError('No assertions are defined for GET request for http://example.com');
         });
     });
@@ -24,13 +24,14 @@ describe('http-response-assert', () => {
     describe('should accept checks', () => {
         it('when only a URL is given, treat as GET request with default timeout', () => {
             const hra = new HttpResponseAssert();
-            hra.addCheck('http://example.com', ['xx']);
+            hra.addTest('http://example.com', ['xx']);
             expect(hra.checks).toEqual([
                 {
                     assertions: ['xx'],
                     request: {
                         headers: {'User-Agent': 'http-response-assert'},
                         method: 'GET',
+                        time: true,
                         timeout: 3000,
                         uri: 'http://example.com'
                     }
@@ -40,7 +41,7 @@ describe('http-response-assert', () => {
 
         it('with a custom timeout', () => {
             const hra = new HttpResponseAssert();
-            hra.addCheck('http://example.com', ['xx'], {timeout: 5000});
+            hra.addTest('http://example.com', ['xx'], {timeout: 5000});
             expect(hra.checks[0].request.timeout).toBe(5000);
         });
     });
@@ -59,7 +60,7 @@ describe('http-response-assert', () => {
             const hra = new HttpResponseAssert();
 
             // Mock the actual checking
-            hra.performCheck = (req, assertions) => {
+            hra.performTest = (req, assertions) => {
                 expect(req).toEqual(req);
                 expect(assertions).toEqual(['Foo']);
                 return Promise.resolve();
@@ -78,8 +79,13 @@ describe('http-response-assert', () => {
             const hra = new HttpResponseAssert();
 
             // Mock the actual checking
-            hra.performCheck = () => {
-                return Promise.reject('Failure');
+            hra.performTest = () => {
+                return Promise.reject(
+                    {
+                        success: false,
+                        // There are more properties, but these are not needed for the test
+                    }
+                );
             };
             hra.checks = [
                 {request: req, assertions: ['Foo']}

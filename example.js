@@ -2,7 +2,7 @@ const HttpResponseAssert = require('@bluem/http-response-assert');
 
 let hra = new HttpResponseAssert();
 
-hra.addCheck(
+hra.addTest(
     'http://example.com',
     [
         // Check for status code
@@ -33,16 +33,50 @@ hra.addCheck(
             }
             return null;
         }
-    ]
+    ],
+    // As third argument, you may pass in an object containing request options.
+    // These options are exactly those options which will be forwarded to the
+    // npm "request" module, so refer to request's docs for more information.
+    // Additionally, the object may contain a property "title", which is an
+    // arbitrary string which will be used in the detailed test results to
+    // identify/describe the test.
 );
 
+// If tests are all successful or not: the result value is an object with a
+// property "summary" (short description of test results) and a property
+// "results" containing an array of test results (one per test), where each
+// array entry is an object with keys "title" (name of the test, either as
+// specified by you or auto-generated from method and URL), "passed",
+// "failed", "timingStart", "timing" and "timingPhases". For the latter 3
+// properties, please consult the docs for the "request" npm module.
 hra.run()
-    .then((msg) => {
+    .then((result) => {
         // Success
-        console.log(msg);
+        console.log(result.summary);
+        logDetailedResults(result.results);
     })
-    .catch((err) => {
+    .catch((result) => {
         // Some kind of failure
         // Do whatever is appropriate: log it, send mail, notify via Slack, ...
-        console.error(err);
+        console.error(result.summary);
+        logDetailedResults(result.results);
     });
+
+/**
+ * Logs details of all executed tests, with all passed and failed assertions,
+ * including response time
+ */
+function logDetailedResults(results) {
+    const tests = results.map(result => {
+            return `
+----- ${result.title} -----
+
+Passed:
+  ${result.passed.length ? '* ' + result.passed.join('\n  * ') : '--'}
+Failed:
+  ${result.failed.length ? '* ' + result.failed.join('\n  * ') : '--'}
+Time: ${Math.max(1, Math.round(result.timingPhases.firstByte))} ms`
+        }
+    );
+    console.log(`\nDETAILED RESULTS:\n${tests.join('\n')}`);
+}

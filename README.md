@@ -1,15 +1,17 @@
 # Overview
 
-`@bluem/http-response-assert` is a Node.js module for performing assertions on HTTP responses which are received after sending requests. These assertions can include things like status code, HTTP headers, response text or CSS selectors and are therefore suitable for simple website or API behavior monitoring.
+Node.js module for performing assertions on HTTP responses which are received after sending requests. These assertions can include things like the status code, HTTP headers, response text, XPath expressions, JSON paths etc and are therefore suitable for simple website or API behavior monitoring. Additionally, the response time and other timing metrics are returned together with the test results, which can be handy for tracking performance changes over time.
 
-While the module is basically generic, it was written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc), in order to perform simple behaviour verification of web applications. Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched and automatically deployed.
+While the module is basically generic, it was written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc). Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched, automatically deployed and both triggered periodically or explicitly, for instance as a smoke test immediately after a deployment.
 
-Requests are done using the widely known [“request” npm module](https://www.npmjs.com/package/request), which means that requests can do anything that the “request” module offers. This includes:
+Requests can be run sequentially or with a configurable concurrency. As the requests are done using the widely known [“request” npm module](https://www.npmjs.com/package/request), you can do anything that the “request” module offers (which is *a lot*), including:
 
 * any HTTP methods
 * any content types
 * arbitrary headers
 * form data
+* HTTP authentication
+* etc.
 
 Out of the box, this module is able to:
 
@@ -18,9 +20,12 @@ Out of the box, this module is able to:
 * Perform plaintext content checks for a number of content types (most importantly: HTML)
 * Perform checks (either existence, non-existence or content) using CSS selectors
 * Perform checks (either existence, non-existence or content) using JSON pointer expressions
-* Perform checks (either existence, non-existence or content) using XPath pointer expressions
+* Perform checks (either existence, non-existence or content) using XPath expressions
 * Perform checks on the raw response body
 * Perform completely arbitrary checks using callback functions
+* Record request/response timing information
+
+In addition, it is possible to write own checks.
 
 
 # Usage
@@ -29,9 +34,9 @@ Usage is simple and straightforward:
 
 * ``require()`` the module
 * Instantiate the class you imported from the module (optionally, give options to the constructor function)
-* Invoke the `addCheck()` method on the instance, giving it a URL, an array of assertions (see below) and, optionally, request options
-* Add more `addCheck()` calls, if needed
-* Invoke the `run()` method, which will return a promise which will either resolve to a success string (no network problems, all assertions passed) or an error string (network problems and/or at least one assertion failed)
+* Invoke the `addTest()` method on the instance, giving it a URL, an array of assertions (see below) and, optionally, request options
+* Add more `addTest()` calls, if needed
+* Invoke the `run()` method, which will return a promise which will resolve in case of success (no network problems, all assertions passed) or reject in case of an error (network problems and/or at least one assertion failed). The value both for resolve and reject is an object with keys “summary” and “results”. Please see example for more info.
 
 ## Options
 When calling the constructor function, you can pass in an object with any of these options:
@@ -84,58 +89,46 @@ This way, you could also overwrite an included handler: handlers are read and ke
 
 
 ## Example
-The following example will check the behavior of http://example.com. It uses all currently existing handlers, with the exception of the JSON handler, which just would not make sense for an HTML document.
+The following example will check the behavior of http://example.com, using only a few of the currently existing handlers.
 
 ```js
 const HttpResponseAssert = require('@bluem/http-response-assert');
 
 let hra = new HttpResponseAssert();
 
-hra.addCheck(
+hra.addTest(
     'http://example.com',
     [
         // Check for status code
         'Code is 200',
         // Header checks
-        // Note: header names are treated case-insensitively
-        'Header "X-Content-Type-Options" is not set',
         'Header "Content-Type" starts with "text/html"',
         // Plaintext checks, with HTML content automatically
         // converted to plaintext with tags, comments, <script>
         // and <style> removed.
         'Text contains "You may use this domain"',
         'Text matches "You [a-z ]+ domain"',
-        'Text does not contain "Error"',
         'Text does not contain "font-family"',
         // CSS selector check
         'Selector "div > p" contains "illustrative examples"',
         // Raw body check
         'Raw body contains "<h1>Example Domain</h1>"',
-        // XPath check
-        `XPath "//h1" is "Example Domain"`,
-        // Custom assertion callback
-        (headers, statusCode, body) => {
-            // Useless example, as this could have been done
-            // easier using 'Text contains "examples"'.
-            if (-1 === body.indexOf('examples')) {
-                return 'Expected body to contain “examples”';
-            }
-            return null;
-        }
     ]
 );
 
 hra.run()
-    .then((msg) => {
+    .then((result) => {
         // Success
-        console.log(msg);
+        console.log(result.summary);
     })
-    .catch((err) => {
+    .catch((result) => {
         // Some kind of failure
         // Do whatever is appropriate: log it, send mail, notify via Slack, ...
-        console.error(err);
+        console.error(result.summary);
     });
 ```
+
+For a more complete example (including detailed reportig of passed and failed assertions, as well as timing information), see `example.js`.
 
 
 ## Debug output
@@ -156,20 +149,16 @@ You may also use `*` as a wildcard, so the following will both work:
 * `npm run test` Unit tests
 * `npm run test-coverage` Unit tests, with coverage in `./coverage`
 
-# ToDo
-
-## Handler aliases
-Nice additions would be:
-
-* “Status code” as alias for “Code”
-* “JSON pointer” as alias for “JSON”
-
-
-## Track timing
-It should be possible to record information on the time needed for requests.
 
 
 # Changes
+
+## 0.6 (2018-01-24)
+* Added details on passed and failed tests
+* Added detailed timing information on performed requests.
+* Breaking change: Method `addCheck` renamed to `addTest()`. (Equally, in the summary you will get, the wording is now “test” instead of “check”).
+* Breaking change: the value to which the promise that is returned from calling `run()` resolves has changed. It used to be a string containing a success or error summary, but is now an object with the following properties: `summary` (string describing test result, incl. number of passed and failed tests) and `results` (an object which, for each test, summarizes the passed and failed assertions and contains request timing information).
+* The third argument to the `addTest()` method is still an optional array of request options, but in addition to (or instead of) request options, you can use a property “title” in the object to define a title/name for the test, which will then be used in the detailed results. If not set, a title will be auto-generated from HTTP method and URL.
 
 ## 0.5 (2018-01-21)
 * Number of concurrent requests and delay between requests can be specified through the options passed to the constructor function.
