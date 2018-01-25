@@ -108,7 +108,7 @@ module.exports = class {
                 exec();
             }
         } else if (0 === this.running) {
-            const failureMessages = this.results.filter(stats => stats.error).map(stats => stats.error);
+            const failureMessages = this.results.filter(result => !result.success).map(result => result.summary);
             const failed = failureMessages.length;
             const succeeded = this.results.length - failed;
 

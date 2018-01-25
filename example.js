@@ -33,7 +33,7 @@ hra.addTest(
             }
             return null;
         }
-    ],
+    ]
     // As third argument, you may pass in an object containing request options.
     // These options are exactly those options which will be forwarded to the
     // npm "request" module, so refer to request's docs for more information.

@@ -153,6 +153,9 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # Changes
 
+## 0.6.1 (2018-01-25)
+* Fixes error in summarizing results
+
 ## 0.6 (2018-01-24)
 * Added details on passed and failed tests
 * Added detailed timing information on performed requests.
