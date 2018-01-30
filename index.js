@@ -139,9 +139,9 @@ module.exports = class {
 
                     const resolveRejectValue = {
                         success: false,
-                        timingStart: response.timingStart,
-                        timings: response.timings,
-                        timingPhases: response.timingPhases,
+                        timingStart: (response && response.timingStart) ? response.timingStart : null,
+                        timings: (response && response.timings) ? response.timings : null,
+                        timingPhases: (response && response.timingPhases) ? response.timingPhases : null,
                     };
 
                     if (error) {

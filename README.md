@@ -133,7 +133,7 @@ For a more complete example (including detailed reportig of passed and failed as
 
 ## Debug output
 
-This module uses the [debug module](https://www.npmjs.com/package/debug) for enabling debug output. This means that using an environemnt variable named “DEBUG” you can control whether you would like to get debug output for this module and, if yes, what kind of debug output:
+This module uses the [debug module](https://www.npmjs.com/package/debug) for enabling debug output. This means that using an environment variable named “DEBUG” you can control whether you would like to get debug output for this module and, if yes, what kind of debug output:
 
 * To get debug output only for the module core (`index.js`), use it like this: `DEBUG=@bluem/http-response-assert,@bluem/http-response-assert:network:* node script.js`
 
@@ -152,6 +152,9 @@ You may also use `*` as a wildcard, so the following will both work:
 
 
 # Changes
+
+## 0.6.1 (2018-01-30)
+* Fixes error occurring when an request cannot be executed
 
 ## 0.6.1 (2018-01-25)
 * Fixes error in summarizing results
