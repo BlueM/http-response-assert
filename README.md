@@ -153,7 +153,11 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # Changes
 
-## 0.6.1 (2018-01-30)
+## 0.6.3 (2018-05-22)
+* Better feedback in case of two error situations
+* Updated dependencies, due to security issues (in the dependencies, not in this module itself)
+
+## 0.6.2 (2018-01-30)
 * Fixes error occurring when an request cannot be executed
 
 ## 0.6.1 (2018-01-25)
