@@ -17,7 +17,7 @@ describe('XPath handler', () => {
     it('should throw an error if the matcher data consists of < 2 items', () => {
         expect(
             () => xPathHandler.check({}, '', html, ['//li/strong'])
-        ).toThrowError('Invalid assertion');
+        ).toThrowError('Invalid XPath assertion: Matcher data consists of less than two strings.\nMatcher data:\n//li/strong');
     });
 
     it('should report a non-matching XPath expression', () => {

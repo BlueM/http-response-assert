@@ -21,7 +21,7 @@ function supports(typeIdentifier) {
 function check(headers, statusCode, body, matcherData) {
 
     if (matcherData.length < 2) {
-        throw new Error('Invalid assertion');
+        throw new Error(`Invalid XPath assertion: Matcher data consists of less than two strings.\nMatcher data:\n${matcherData}\n`);
     }
 
     // Add a virtual console for suppressing warnings, e.g. related to CSS imports

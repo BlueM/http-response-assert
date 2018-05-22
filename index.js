@@ -180,7 +180,12 @@ module.exports = class {
                 assertionData = assertion;
                 matcher = functionHandler;
             } else {
-                assertionData = split(assertion.trim());
+                try {
+                    assertionData = split(assertion.trim());
+                } catch (e) {
+                    throw new Error(`Error encountered: “${e.message}”\nLine:\n${assertion.trim()}\n`);
+                    return;
+                }
                 matcher = this.getHandler(assertionData.shift());
             }
 
