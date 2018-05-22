@@ -1,6 +1,6 @@
 {
   "name": "@bluem/http-response-assert",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Performs assertions on responses for arbitrary HTTP(S) requests",
   "main": "index.js",
   "author": {
