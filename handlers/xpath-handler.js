@@ -9,7 +9,7 @@ function supports(typeIdentifier) {
 }
 
 /**
- * @todo
+ * Performs an XPath assertion check on the response
  *
  * @param headers
  * @param statusCode
@@ -19,7 +19,6 @@ function supports(typeIdentifier) {
  * @returns {*}
  */
 function check(headers, statusCode, body, matcherData) {
-
     if (matcherData.length < 2) {
         throw new Error(`Invalid XPath assertion: Matcher data consists of less than two strings.\nMatcher data:\n${matcherData}\n`);
     }

@@ -5,7 +5,7 @@ function supports(typeIdentifier) {
 }
 
 /**
- * @todo
+ * Performs the check for an expected response status code
  *
  * @param headers
  * @param statusCode

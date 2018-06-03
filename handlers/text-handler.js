@@ -7,7 +7,7 @@ function supports(typeIdentifier) {
 }
 
 /**
- * @todo
+ * Performs a text assertion check on the response
  *
  * @param headers
  * @param statusCode

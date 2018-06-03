@@ -8,7 +8,7 @@ function supports(typeIdentifier) {
 }
 
 /**
- * @todo
+ * Performs a CSS selector assertion check on the response
  *
  * @param headers
  * @param statusCode
@@ -18,7 +18,6 @@ function supports(typeIdentifier) {
  * @returns {*}
  */
 function check(headers, statusCode, body, matcherData) {
-
     debug('matcherData: %o', matcherData);
 
     if (matcherData.length < 2) {

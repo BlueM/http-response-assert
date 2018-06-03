@@ -1,7 +1,7 @@
 const debug = require('debug')('@bluem/http-response-assert:handler:function');
 
 /**
- * @todo
+ * Runs a function on a response
  *
  * @param headers
  * @param statusCode
@@ -11,7 +11,6 @@ const debug = require('debug')('@bluem/http-response-assert:handler:function');
  * @returns {*}
  */
 module.exports = function (headers, statusCode, body, func) {
-
     debug('matcherData: %o', func);
 
     let result;
