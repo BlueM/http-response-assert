@@ -17,7 +17,6 @@ function supports(typeIdentifier) {
  * @returns {*}
  */
 function check(headers, statusCode, body, matcherData) {
-
     debug('matcherData: %o', matcherData);
 
     const actualValue = getPlaintext(headers['content-type'], body);
@@ -45,15 +44,8 @@ function getPlaintext(rawContentTypeHeader, body) {
         case 'text/xml':
             return htmlToPlaintext(body);
 
-        case 'text/css':
-            return body;
-
-        case 'application/javascript':
-        case 'text/javascript':
-            return body;
-
         default:
-            throw new Error('Unsupported MIME type: ' + mimeType);
+            return body;
     }
 }
 
