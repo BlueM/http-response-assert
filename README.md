@@ -153,6 +153,10 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # Changes
 
+## 0.7.0 (2018-06-03)
+* Text check: By default, check the response content as-is for all MIME types, and only modify the content for certain MIME types (instead of previous behavior, which was only able to process a pre-defined list of MIME types)
+* Another dependencies update, so that no security issues remain
+
 ## 0.6.3 (2018-05-22)
 * Better feedback in case of two error situations
 * Updated dependencies, due to security issues (in the dependencies, not in this module itself)
