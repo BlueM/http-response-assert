@@ -1,4 +1,8 @@
-const HttpResponseAssert = require('@bluem/http-response-assert');
+// The next line assumes you run it from within the "@bluem/http-response-assert" module.
+const HttpResponseAssert = require('./index');
+// To rather run this example from a codebase where the module is included
+// as a dependency, use this line instead:
+// const HttpResponseAssert = require('@bluem/http-response-assert');
 
 let hra = new HttpResponseAssert();
 
