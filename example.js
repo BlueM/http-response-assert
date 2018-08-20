@@ -23,6 +23,7 @@ hra.addTest(
         'Text does not contain "Error"',
         'Text does not contain "font-family"',
         // CSS selector check
+        'Selector "title" is "Example Domain"',
         'Selector "div > p" contains "illustrative examples"',
         // Raw body check
         'Raw body contains "<h1>Example Domain</h1>"',

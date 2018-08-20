@@ -1,6 +1,6 @@
 # Overview
 
-Node.js module for performing assertions on HTTP responses which are received after sending requests. These assertions can include things like the status code, HTTP headers, response text, XPath expressions, JSON paths etc and are therefore suitable for simple website or API behavior monitoring. Additionally, the response time and other timing metrics are returned together with the test results, which can be handy for tracking performance changes over time.
+This module performs assertions on HTTP responses it received from requests it sent before. These assertions can include things like the status code, HTTP headers, response text, XPath expressions, JSON paths etc and are therefore suitable for simple website or API behavior monitoring. Additionally, the response time and other timing metrics are returned together with the test results, which can be handy for tracking performance changes over time.
 
 While the module is basically generic, it was written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc). Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched, automatically deployed and both triggered periodically or explicitly, for instance as a smoke test immediately after a deployment.
 
@@ -110,6 +110,7 @@ hra.addTest(
         'Text matches "You [a-z ]+ domain"',
         'Text does not contain "font-family"',
         // CSS selector check
+        'Selector "title" is "Example Domain"',
         'Selector "div > p" contains "illustrative examples"',
         // Raw body check
         'Raw body contains "<h1>Example Domain</h1>"',
@@ -172,7 +173,7 @@ You may also use `*` as a wildcard, so the following will both work:
 * Added detailed timing information on performed requests.
 * Breaking change: Method `addCheck` renamed to `addTest()`. (Equally, in the summary you will get, the wording is now “test” instead of “check”).
 * Breaking change: the value to which the promise that is returned from calling `run()` resolves has changed. It used to be a string containing a success or error summary, but is now an object with the following properties: `summary` (string describing test result, incl. number of passed and failed tests) and `results` (an object which, for each test, summarizes the passed and failed assertions and contains request timing information).
-* The third argument to the `addTest()` method is still an optional array of request options, but in addition to (or instead of) request options, you can use a property “title” in the object to define a title/name for the test, which will then be used in the detailed results. If not set, a title will be auto-generated from HTTP method and URL.
+* The third argument to the `addTest()` method is still an optional request options object, but in addition to (or instead of) request options, you can use a property “title” in the object to define a title/name for the test, which will then be used in the detailed results. If not set, a title will be auto-generated from HTTP method and URL.
 
 ## 0.5 (2018-01-21)
 * Number of concurrent requests and delay between requests can be specified through the options passed to the constructor function.
