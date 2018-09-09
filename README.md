@@ -1,8 +1,8 @@
 # Overview
 
-This module performs assertions on HTTP responses it received from requests it sent before. These assertions can include things like the status code, HTTP headers, response text, XPath expressions, JSON paths etc and are therefore suitable for simple website or API behavior monitoring. Additionally, the response time and other timing metrics are returned together with the test results, which can be handy for tracking performance changes over time.
+This module performs assertions on HTTP responses it receives from requests it sends. These assertions can include things like the status code, HTTP headers, response text, XPath expressions, JSON paths etc and are therefore suitable for simple website or API behavior monitoring. Additionally, the response time and other timing metrics are returned together with the test results, which can be handy for tracking performance changes over time.
 
-While the module is basically generic, it was written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc). Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched, automatically deployed and both triggered periodically or explicitly, for instance as a smoke test immediately after a deployment.
+While the module is basically generic, it was initially written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc) to provide external behavior monitoring of websites and web applications. Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched, automatically deployed and both triggered periodically or explicitly, for instance as a smoke test immediately after a deployment. Not to mention that the types of checks you can run are unlimited, as opposed to monitoring services where sometimes you cannot do more than verify status codes, page titles or presence/absence of certain text fragments on the page. 
 
 Requests can be run sequentially or with a configurable concurrency. As the requests are done using the widely known [“request” npm module](https://www.npmjs.com/package/request), you can do anything that the “request” module offers (which is *a lot*), including:
 
@@ -18,6 +18,7 @@ Out of the box, this module is able to:
 * Verify response HTTP status code
 * Perform checks on response headers
 * Perform plaintext content checks for a number of content types (most importantly: HTML)
+* Perform checks on the page title (which only makes sense for HTML documents)
 * Perform checks (either existence, non-existence or content) using CSS selectors
 * Perform checks (either existence, non-existence or content) using JSON pointer expressions
 * Perform checks (either existence, non-existence or content) using XPath expressions
@@ -63,6 +64,7 @@ In each assertion, the first word (which is treated case-insensitively) must spe
 * `Selector` is an alias for `CSS`
 * `Status` is an alias for `Code`
 * `Text` for assertions based on a plaintext representation of the response body
+* `Title` for assertions based on the HTML page title. (This can also be achieved using a `CSS` or `XPath` assertion, but the `Title` assertion makes tests much nicer to read.)
 * `XPath` for assertions based on an XPath expression applied to the response body
 
 The “matcher” string (in the example above: “does not contain”) supports a number of wordings such as “contains”, “starts with”, “does not exist” (which is primarily useful for headers), “is” etc. See `matcher.js` for details.
@@ -103,6 +105,8 @@ hra.addTest(
         'Code is 200',
         // Header checks
         'Header "Content-Type" starts with "text/html"',
+        // Page title (which only makes sense for HTML documents)
+        'Title is "Example domain"',
         // Plaintext checks, with HTML content automatically
         // converted to plaintext with tags, comments, <script>
         // and <style> removed.
@@ -114,6 +118,15 @@ hra.addTest(
         'Selector "div > p" contains "illustrative examples"',
         // Raw body check
         'Raw body contains "<h1>Example Domain</h1>"',
+        // Custom assertion callback
+        (headers, statusCode, body) => {
+            // Useless example, as this could have been done
+            // easier using 'Text contains "examples"'.
+            if (-1 === body.indexOf('examples')) {
+                return 'Expected body to contain “examples”';
+            }
+            return null;
+        }
     ]
 );
 
@@ -153,6 +166,9 @@ You may also use `*` as a wildcard, so the following will both work:
 
 
 # Changes
+
+## 0.8.0 (2018-09-09)
+* Added the `Title` assertion
 
 ## 0.7.0 (2018-06-03)
 * Text check: By default, check the response content as-is for all MIME types, and only modify the content for certain MIME types (instead of previous behavior, which was only able to process a pre-defined list of MIME types)

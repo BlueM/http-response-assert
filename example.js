@@ -12,6 +12,8 @@ hra.addTest(
         // Check for status code
         'Code is 200',
         // Header checks
+        // Page title (which only makes sense for HTML documents)
+        'Title is "Example domain"',
         // Note: header names are treated case-insensitively
         'Header "X-Content-Type-Options" is not set',
         'Header "Content-Type" starts with "text/html"',
