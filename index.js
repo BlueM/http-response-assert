@@ -145,9 +145,9 @@ module.exports = class {
                     };
 
                     if (error) {
-                        let errString = `${req.method} ${req.uri} (${error})`;
+                        let errString = `${req.method} ${req.uri} (${error} / configured timeout: ${req.timeout})`;
                         debug(`Execution failed: ${errString} -- ${req.uri}`);
-                        resolveRejectValue.error = `Execution failed: ${errString}`;
+                        resolveRejectValue.summary = `Execution failed: ${errString}`;
                         reject(resolveRejectValue);
                         return;
                     }
