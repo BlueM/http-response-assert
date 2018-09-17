@@ -4,7 +4,15 @@ const HttpResponseAssert = require('./index');
 // as a dependency, use this line instead:
 // const HttpResponseAssert = require('@bluem/http-response-assert');
 
-let hra = new HttpResponseAssert();
+let hra = new HttpResponseAssert(
+    // Optional options. In this example pointless, as only using default values.
+    {
+        concurrency: 1, // Default: only 1 request at a time
+        delay: 100, // Default: wait 100 ms between requests
+        timeout: 3000, // Default: Timeout after 3000 ms
+        agent: 'http-response-assert', // "User-Agent" header value
+    }
+);
 
 hra.addTest(
     'http://example.com',

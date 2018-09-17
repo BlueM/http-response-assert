@@ -2,7 +2,7 @@
 
 This module performs assertions on HTTP responses it receives from requests it sends. These assertions can include things like the status code, HTTP headers, response text, XPath expressions, JSON paths etc and are therefore suitable for simple website or API behavior monitoring. Additionally, the response time and other timing metrics are returned together with the test results, which can be handy for tracking performance changes over time.
 
-While the module is basically generic, it was initially written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc) to provide external behavior monitoring of websites and web applications. Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched, automatically deployed and both triggered periodically or explicitly, for instance as a smoke test immediately after a deployment. Not to mention that the types of checks you can run are unlimited, as opposed to monitoring services where sometimes you cannot do more than verify status codes, page titles or presence/absence of certain text fragments on the page. 
+While the module is basically generic, it was initially written to be used in “Serverless” functions (AWS Lambda, Google Cloud Functions, Azure Functions etc) or on separate monitoring hosts to provide external behavior monitoring of websites and web applications. Doing that using code (as opposed to configuring a monitoring service where you hand-craft checks in the GUI) means that checks can be version-controlled, branched, automatically deployed and both triggered periodically or explicitly, for instance as a smoke test immediately after a deployment. Not to mention that the types of checks you can run are unlimited, as opposed to monitoring services where sometimes you cannot do more than verify status codes, page titles or presence/absence of certain text fragments on the page. 
 
 Requests can be run sequentially or with a configurable concurrency. As the requests are done using the widely known [“request” npm module](https://www.npmjs.com/package/request), you can do anything that the “request” module offers (which is *a lot*), including:
 
@@ -96,7 +96,15 @@ The following example will check the behavior of http://example.com, using only 
 ```js
 const HttpResponseAssert = require('@bluem/http-response-assert');
 
-let hra = new HttpResponseAssert();
+let hra = new HttpResponseAssert(
+    // Optional options. In this example pointless, as only using default values.
+    {
+        concurrency: 1, // Default: only 1 request at a time
+        delay: 100, // Default: wait 100 ms between requests
+        timeout: 3000, // Default: Timeout after 3000 ms
+        agent: 'http-response-assert', // "User-Agent" header value
+    }
+);
 
 hra.addTest(
     'http://example.com',
