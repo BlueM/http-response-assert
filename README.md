@@ -175,6 +175,10 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # Changes
 
+## 0.8.1 (2018-09-17)
+* Fixed missing error message in case of timeout
+* Readme: Added options to example
+
 ## 0.8.0 (2018-09-09)
 * Added the `Title` assertion
 
