@@ -131,7 +131,7 @@ module.exports = class {
         return new Promise((resolve, reject) => {
 
             debugReq('Request: %s %s', req.method, req.uri);
-
+            const time = Date.now();
             request(
                 req,
                 (error, response, body) => {
@@ -139,7 +139,7 @@ module.exports = class {
 
                     const resolveRejectValue = {
                         success: false,
-                        timingStart: (response && response.timingStart) ? response.timingStart : null,
+                        timingStart: (response && response.timingStart) ? response.timingStart : time,
                         timings: (response && response.timings) ? response.timings : null,
                         timingPhases: (response && response.timingPhases) ? response.timingPhases : null,
                     };
