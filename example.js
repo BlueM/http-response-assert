@@ -21,7 +21,7 @@ hra.addTest(
         'Code is 200',
         // Header checks
         // Page title (which only makes sense for HTML documents)
-        'Title is "Example domain"',
+        'Title is "Example Domain"',
         // Note: header names are treated case-insensitively
         'Header "X-Content-Type-Options" is not set',
         'Header "Content-Type" starts with "text/html"',
@@ -48,13 +48,17 @@ hra.addTest(
             }
             return null;
         }
-    ]
+    ],
     // As third argument, you may pass in an object containing request options.
     // These options are exactly those options which will be forwarded to the
     // npm "request" module, so refer to request's docs for more information.
     // Additionally, the object may contain a property "title", which is an
     // arbitrary string which will be used in the detailed test results to
     // identify/describe the test.
+    {
+        method: 'GET', // Optional, defaults to "GET"
+        info: 'Demo check', // Optional: arbitrary data (string, object, ...) returned with the result
+    }
 );
 
 // If tests are all successful or not: the result value is an object with a
@@ -83,14 +87,19 @@ hra.run()
  */
 function logDetailedResults(results) {
     const tests = results.map(result => {
-            return `
------ ${result.title} -----
+            let report = `
+----- ${result.info} -----
 
 Passed:
-  ${result.passed.length ? '* ' + result.passed.join('\n  * ') : '--'}
+  ${result.passed.length ? '* ' + result.passed.join('\n  * ') : 'n/a'}
 Failed:
-  ${result.failed.length ? '* ' + result.failed.join('\n  * ') : '--'}
-Time: ${Math.max(1, Math.round(result.timingPhases.firstByte))} ms`
+  ${result.failed.length ? '* ' + result.failed.join('\n  * ') : 'n/a'}`;
+
+            if (result.timingPhases) {
+                report += `\nTime: ${Math.max(1, Math.round(result.timingPhases.firstByte))} ms`;
+            }
+
+            return report;
         }
     );
     console.log(`\nDETAILED RESULTS:\n${tests.join('\n')}`);
