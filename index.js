@@ -78,7 +78,6 @@ module.exports = class {
     }
 
     executeNextCheck(resolve, reject) {
-
         const exec = () => {
             setTimeout(
                 () => this.executeNextCheck(resolve, reject),
@@ -89,17 +88,20 @@ module.exports = class {
         if (this.checks.length) {
             let check = this.checks.shift();
             this.running ++;
-            const requestTitle = check.request.title || this.createTestTitle(check.request);
             let p = this.performTest(check.request, check.assertions);
             p.then((resolveValue) => {
                 this.running --;
-                resolveValue.title = requestTitle;
+                resolveValue.info = check.request.info || {};
+                resolveValue.uri = check.request.uri;
+                resolveValue.method = check.request.method;
                 this.results.push(resolveValue);
                 exec();
             })
             .catch((rejectValue) => {
                 this.running --;
-                rejectValue.title = requestTitle;
+                rejectValue.info = check.request.info || {};
+                rejectValue.uri = check.request.uri;
+                rejectValue.method = check.request.method;
                 this.results.push(rejectValue);
                 exec();
             });
@@ -119,12 +121,6 @@ module.exports = class {
                 resolve({results: this.results, summary});
             }
         }
-    }
-
-    createTestTitle(request) {
-        // Preliminary implementation with room for improvement: include info
-        // on response body, form data, ...
-        return `${request.method} ${request.uri}`;
     }
 
     performTest(req, assertions) {
