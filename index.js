@@ -148,6 +148,8 @@ module.exports = class {
                         let errString = `${req.method} ${req.uri} (${error} / configured timeout: ${req.timeout})`;
                         debug(`Execution failed: ${errString} -- ${req.uri}`);
                         resolveRejectValue.summary = `Execution failed: ${errString}`;
+                        resolveRejectValue.passed = [];
+                        resolveRejectValue.failed = assertions;
                         reject(resolveRejectValue);
                         return;
                     }
