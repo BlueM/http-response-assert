@@ -175,6 +175,11 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # Changes
 
+## 0.9 (2018-10-05)
+* In case a response cannot be retrieved, the time of request creation is used as fallback value for `timingStart` property (which was previously empty in such cases)
+* A result’s `passed` and `failed` properties are now always present, even in case of failed requests
+* Breaking change: Instead of a property `title`, the result of a request now contains a property `info`, which can be anything (string, object, …) and which is not used by this library, but simply returned together with the result and therefore can be used for holding arbitrary metadata.
+
 ## 0.8.1 (2018-09-17)
 * Fixed missing error message in case of timeout
 * Readme: Added options to example
