@@ -1,6 +1,6 @@
 {
   "name": "@bluem/http-response-assert",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Performs assertions on responses for arbitrary HTTP(S) requests",
   "main": "index.js",
   "author": {
@@ -13,6 +13,9 @@
   "scripts": {
     "test": "jest",
     "test-coverage": "jest --coverage"
+  },
+  "jest": {
+    "testURL": "http://localhost"
   },
   "dependencies": {
     "argv-split": "^2.0.1",
