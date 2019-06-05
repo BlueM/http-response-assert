@@ -175,6 +175,9 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # Changes
 
+## 0.9.3 (2019-06-05)
+* Update dependencies, due to vulnerable 3rd-party modules
+
 ## 0.9.2 (2019-02-08)
 * Update dependencies, due to some security issues
 * Tweak Jest config to prevent problem with JSDom update
