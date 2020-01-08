@@ -175,6 +175,9 @@ You may also use `*` as a wildcard, so the following will both work:
 
 # Changes
 
+## 0.9.5 (2020-01-08)
+* Update dependencies, due to a vulnerable 3rd-party module
+
 ## 0.9.4 (2019-09-03)
 * Update dependencies, due to a vulnerable 3rd-party module
 
