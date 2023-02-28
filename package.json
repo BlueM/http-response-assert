@@ -29,7 +29,7 @@
     "argv-split": "^2.0.1",
     "debug": "^3.1.0",
     "html2plaintext": "^2.0.1",
-    "jsdom": "^11.11.0",
+    "jsdom": "^16.5.0",
     "jsonpointer": "^4.0.1",
     "request": "^2.88.0",
     "require-directory": "^2.1.1"
